@@ -13,7 +13,7 @@
 
     </div>
     <!-- main -->
-    <SidebarMain class="p-1" />
+    <SidebarMain class="p-2" />
     <!-- footer -->
     <div class="border-t-[1px] border-base-300 m-2">
       <li class="mt-2"><a>升级</a></li>

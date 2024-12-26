@@ -14,7 +14,7 @@ const editData = [
   <ul class="flex-1 overflow-auto mt-8">
     <li class="menu-title">今天</li>
     <!-- 记录 -->
-    <div class="dropdown dropdown-bottom dropdown-end w-full" v-for="i in 20">
+    <div class="dropdown dropdown-bottom dropdown-end w-full" v-for="i in 2">
       <li class="group">
         <a :class="{ active: i === 1 }">
           <span class="text-ellipsis">爱是自由意志的沉沦爱是自由意志的沉沦</span>
