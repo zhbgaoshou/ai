@@ -20,6 +20,15 @@
             </div>
         </div>
     </dialog>
+
+    <!-- 弹窗 -->
+    <div class="toast toast-top toast-end" v-if="isLogingSuccess">
+        <div class="alert alert-success">
+            <span class="flex gap-2">
+                <SuccessIcon width="18" />{{ userStore.info.username }} 欢迎回来!!!
+            </span>
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -29,6 +38,12 @@ import { ref } from 'vue'
 import AuthLogin from './AuthLogin.vue'
 import AuthRegister from './AuthRegister.vue'
 import AuthAvatar from './AuthAvatar.vue'
+// 图标
+import SuccessIcon from '@/assets/svg/success.svg?component'
+
+// store
+import { useUserStore } from "@/store";
+const userStore = useUserStore()
 
 /** 打开登录/注册弹窗 */
 const modal = ref<HTMLDialogElement>()
@@ -44,13 +59,18 @@ function toggleTab(e: Event) {
 }
 
 /** 登录 or 注册 */
-const authData = ref({
-    username: '',
-    password: '',
-    email: '',
-})
-function handleLogin() {
-    console.log('登录')
+let isLogingSuccess = ref(false)
+async function handleLogin() {
+    await userStore.login()
+
+    if (userStore.isLogin) {
+        isLogingSuccess.value = true
+        modal.value?.close()
+        const timer = setTimeout(() => {
+            isLogingSuccess.value = false
+            clearTimeout(timer)
+        }, 2000)
+    }
 }
 
 function handleRegister() {

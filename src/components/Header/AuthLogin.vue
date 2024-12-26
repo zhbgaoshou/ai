@@ -2,11 +2,12 @@
     <form>
         <label class="input input-bordered flex items-center gap-2 m-4 rounded-box">
             <UserIcon width="18" />
-            <input type="text" class="grow" placeholder="用户名" />
+            <input type="text" class="grow" placeholder="用户名" v-model="userStore.authData.username" />
         </label>
         <label class="input input-bordered flex items-center gap-2 m-4 rounded-box">
             <PasswordIcon width="18" />
-            <input :type="showPassword ? 'text' : 'password'" class="grow" placeholder="密码" />
+            <input :type="showPassword ? 'text' : 'password'" class="grow" placeholder="密码"
+                v-model="userStore.authData.password" />
             <label class="swap swap-flip">
                 <!-- this hidden checkbox controls the state -->
                 <input type="checkbox" v-model="showPassword" />
@@ -17,7 +18,7 @@
         </label>
 
         <div class="flex gap-2 m-2 mt-8">
-            <button class="btn btn-info flex-1" @click="$emit('login')">登录
+            <button type="button" class="btn btn-info flex-1" @click="$emit('login')">登录
                 <LoginIcon width="18" />
             </button>
             <button class="btn" type="reset">重置
@@ -37,8 +38,9 @@ import RefreshIcon from "@/assets/svg/refresh.svg?component";
 import LoginIcon from "@/assets/svg/login.svg?component";
 import EyeIcon from "@/assets/svg/eye.svg?component";
 import EyeOffIcon from "@/assets/svg/eye-off.svg?component";
-
-
+// store
+import { useUserStore } from "@/store";
+const userStore = useUserStore()
 
 defineEmits(['login'])
 

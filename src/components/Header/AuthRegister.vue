@@ -2,11 +2,12 @@
     <form>
         <label class="input input-bordered flex items-center gap-2 m-4 rounded-box">
             <UserIcon width="18" />
-            <input type="text" class="grow" placeholder="用户名" />
+            <input type="text" class="grow" placeholder="用户名" v-model="userStore.authData.username" />
         </label>
         <label class="input input-bordered flex items-center gap-2 m-4 rounded-box">
             <PasswordIcon width="18" />
-            <input :type="showPassword ? 'text' : 'password'" class="grow" placeholder="密码" />
+            <input :type="showPassword ? 'text' : 'password'" class="grow" placeholder="密码"
+                v-model="userStore.authData.password" />
             <label class="swap swap-flip">
                 <!-- this hidden checkbox controls the state -->
                 <input type="checkbox" v-model="showPassword" />
@@ -17,7 +18,7 @@
         </label>
         <label class="input input-bordered flex items-center gap-2 m-4 rounded-box">
             <MailIcon width="18" />
-            <input type="email" class="grow" placeholder="邮箱地址" />
+            <input type="email" class="grow" placeholder="邮箱地址" v-model="userStore.authData.email" />
         </label>
 
         <div class="flex gap-2 m-2 mt-8">
@@ -33,7 +34,7 @@
 
 <script setup lang="ts">
 // vue
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 // 图标
 import UserIcon from "@/assets/svg/user.svg?component";
 import PasswordIcon from "@/assets/svg/password.svg?component";
@@ -43,12 +44,20 @@ import MailIcon from '@/assets/svg/mail.svg?component'
 import EyeIcon from "@/assets/svg/eye.svg?component";
 import EyeOffIcon from "@/assets/svg/eye-off.svg?component";
 
+// store
+import { useUserStore } from "@/store";
+const userStore = useUserStore()
+
 defineEmits(['register'])
 
 /**
  * 密码是否显示
 */
 let showPassword = ref(false)
+
+onMounted(() => {
+    userStore.resetAuthData()
+})
 
 </script>
 

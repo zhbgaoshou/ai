@@ -4,7 +4,9 @@
     <div class="m-2">
       <li>
         <span class="flex justify-between gap-2">
-          创建新对话
+          <div class="tooltip tooltip-right" data-tip="关闭边栏">
+            <ExpandLeftIcon width="18" @click="$emit('closeSidebar')" class="hidden md:block" />
+          </div>
           <div class="tooltip tooltip-bottom" data-tip="新对话">
             <EditIcon width="18" @click.stop="createNewChat" />
           </div>
@@ -27,7 +29,9 @@
 import SidebarMain from "./SidebarMain.vue";
 // 图标
 import EditIcon from "@/assets/svg/edit.svg?component";
+import ExpandLeftIcon from "@/assets/svg/expand-left.svg?component";
 
+defineEmits(['closeSidebar'])
 /** 创建新对话 */
 const createNewChat = () => {
   console.log("createNewChat");

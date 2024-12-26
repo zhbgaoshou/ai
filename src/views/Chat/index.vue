@@ -5,17 +5,20 @@
             <Header />
             <!-- 控制边栏 的按钮 -->
             <div class="absolute top-[54px] left-2">
+                <!-- h5 -->
                 <label for="my-drawer" class="drawer-button">
-                    <ExpandLeftIcon class="md:hidden" />
+                    <ExpandLeftIcon width="18" class="md:hidden" />
                 </label>
-                <div class="tooltip tooltip-right" data-tip="展开/收缩">
-                    <ExpandLeftIcon @click=" isCollapse = !isCollapse" class="md:block hidden"></ExpandLeftIcon>
+                <!-- pc -->
+                <div class="tooltip tooltip-right" data-tip="打开边栏">
+                    <ExpandLeftIcon width="18" v-show="isCollapse" @click=" isCollapse = !isCollapse"
+                        class="md:block hidden" />
                 </div>
             </div>
         </div>
         <div class="drawer-side">
             <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-            <Sidebar />
+            <Sidebar @close-sidebar="isCollapse = true" />
         </div>
     </div>
 </template>
@@ -29,6 +32,7 @@ import Header from "@/components/Header/index.vue";
 // 图标
 import ExpandLeftIcon from "@/assets/svg/expand-left.svg?component";
 
+// 边栏折叠操作
 const isCollapse = ref(false);
 
 
