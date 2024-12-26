@@ -17,7 +17,7 @@
       </div>
 
       <!-- main -->
-      <SidebarMain />
+      <SidebarMain class="p-4" />
 
       <!-- footer -->
       <div class="border-t-[1px] border-base-300 m-2">
