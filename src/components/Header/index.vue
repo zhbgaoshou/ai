@@ -11,9 +11,9 @@
             <!-- 主题切换 -->
             <div class="dropdown dropdown-end">
                 <div tabindex="0" role="button">
-                    <ToolButton tip="主题">
-                        <ThemeIcon width="18" />
-                    </ToolButton>
+                    <div class="tooltip tooltip-left flex items-center" data-tip="主题切换">
+                        <ThemeIcon />
+                    </div>
                 </div>
                 <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
                     <li v-for="themeProp, themeName in themes" @click="settingsStore.setTheme(themeName)">

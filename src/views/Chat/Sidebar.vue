@@ -4,8 +4,8 @@
     <div class="m-2">
       <li>
         <span class="flex justify-between gap-2">
-          <div class="tooltip tooltip-right" data-tip="关闭边栏">
-            <ExpandLeftIcon width="18" @click="$emit('closeSidebar')" class="hidden md:block" />
+          <div class="tooltip tooltip-right hidden md:block" data-tip="关闭边栏">
+            <ExpandLeftIcon width="18" @click="$emit('closeSidebar')" />
           </div>
           <div class="tooltip tooltip-bottom" data-tip="新对话">
             <EditIcon width="18" @click.stop="createNewChat" />

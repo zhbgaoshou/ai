@@ -6,13 +6,13 @@
             <!-- 控制边栏 的按钮 -->
             <div class="absolute top-[54px] left-2">
                 <!-- h5 -->
-                <label for="my-drawer" class="drawer-button">
-                    <ExpandLeftIcon width="18" class="md:hidden" />
+                <label for="my-drawer" class="drawer-button md:hidden">
+                    <ExpandLeftIcon width="18" />
                 </label>
                 <!-- pc -->
-                <div class="tooltip tooltip-right" data-tip="打开边栏">
-                    <ExpandLeftIcon width="18" v-show="isCollapse" @click=" isCollapse = !isCollapse"
-                        class="md:block hidden" />
+                <div v-show="isCollapse" class="tooltip tooltip-right relative md:block hidden" data-tip="打开边栏">
+                    <ExpandLeftIcon width="18" @click=" isCollapse = !isCollapse" />
+                    <span class="w-[6px] h-[6px] bg-info absolute top-[2px] right-0 rounded-full"></span>
                 </div>
             </div>
         </div>
