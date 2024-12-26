@@ -11,10 +11,10 @@ const editData = [
 </script>
 
 <template>
-  <ul class="flex-1 overflow-auto mt-5">
+  <ul class="flex-1 overflow-auto mt-8">
     <li class="menu-title">今天</li>
     <!-- 记录 -->
-    <div class="dropdown dropdown-bottom dropdown-end w-full" v-for="i in 2">
+    <div class="dropdown dropdown-bottom dropdown-end w-full" v-for="i in 20">
       <li class="group">
         <a :class="{ focus: i === 1 }">
           <span class="text-ellipsis"
