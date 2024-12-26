@@ -7,7 +7,7 @@ const themeInit = localStorage.getItem('theme') || 'light';
 export const useSettingsStore = defineStore("settings", {
     state: () => {
         return {
-            themes: ['light', 'dark', 'wireframe'],
+            themes: ['light', 'dark', 'wireframe', 'lofi'],
             currentTheme: 'light',
         };
     },

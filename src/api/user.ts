@@ -17,3 +17,11 @@ export const infoApi = () => {
         method: 'get'
     })
 }
+
+export const registerApi = (data: IAuthData) => {
+    return $http({
+        url: "/register",
+        method: "post",
+        data,
+    });
+};

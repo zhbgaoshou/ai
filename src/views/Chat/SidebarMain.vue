@@ -2,6 +2,8 @@
 import MoreIcon from "@/assets/svg/more.svg?component";
 import DeleteIcon from "@/assets/svg/delete.svg?component";
 import PenIcon from "@/assets/svg/pen.svg?component";
+import AiLogoIcon from "@/assets/svg/ai-logo.svg?component";
+
 
 /** 操作数据 */
 const editData = [
@@ -17,6 +19,7 @@ const editData = [
     <div class="dropdown dropdown-bottom dropdown-end w-full" v-for="i in 2">
       <li class="group">
         <a :class="{ active: i === 1 }">
+          <AiLogoIcon />
           <span class="text-ellipsis">爱是自由意志的沉沦爱是自由意志的沉沦</span>
           <button :tabindex="0" class="more-drop" data-tip="更多操作" @click.stop>
             <MoreIcon class=" group-hover:visible" :class="{ invisible: i !== 1 }" />

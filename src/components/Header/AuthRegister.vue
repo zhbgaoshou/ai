@@ -22,7 +22,7 @@
         </label>
 
         <div class="flex gap-2 m-2 mt-8">
-            <button class="btn btn-success flex-1" @click="$emit('register')">注册
+            <button type="button" class="btn btn-success flex-1" @click="$emit('register')">注册
                 <LoginIcon width="18" />
             </button>
             <button class="btn" type="reset">重置

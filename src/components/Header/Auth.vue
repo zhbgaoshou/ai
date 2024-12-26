@@ -21,11 +21,20 @@
         </div>
     </dialog>
 
-    <!-- 弹窗 -->
+    <!-- 登录成功弹窗 -->
     <div class="toast toast-top toast-end" v-if="isLogingSuccess">
+        <div class="alert alert-info">
+            <span class="flex gap-2">
+                <SuccessIcon width="20" />{{ userStore.info.username }} 欢迎回来!!!
+            </span>
+        </div>
+    </div>
+
+    <!-- 注册成功弹窗 -->
+    <div class="toast toast-top toast-end" v-if="isRegisterSuccess">
         <div class="alert alert-success">
             <span class="flex gap-2">
-                <SuccessIcon width="18" />{{ userStore.info.username }} 欢迎回来!!!
+                <SuccessIcon width="20" />恭喜，注册成功!!!
             </span>
         </div>
     </div>
@@ -50,7 +59,7 @@ const modal = ref<HTMLDialogElement>()
 function openAuthModal() {
     modal.value?.showModal()
 }
-/** 切换 */
+/** 切换 注册/登录 modal*/
 let isLoginTab = ref(true)
 function toggleTab(e: Event) {
     const dataset = (e.target as HTMLElement).dataset
@@ -58,7 +67,7 @@ function toggleTab(e: Event) {
     source === 'login' ? isLoginTab.value = true : isLoginTab.value = false
 }
 
-/** 登录 or 注册 */
+/** 登录 or 注册 回调*/
 let isLogingSuccess = ref(false)
 async function handleLogin() {
     await userStore.login()
@@ -72,9 +81,17 @@ async function handleLogin() {
         }, 2000)
     }
 }
+let isRegisterSuccess = ref(false)
+async function handleRegister() {
+    await userStore.register()
 
-function handleRegister() {
-    console.log('注册')
+    isRegisterSuccess.value = true
+    isLoginTab.value = true
+
+    const timer = setTimeout(() => {
+        isRegisterSuccess.value = false
+        clearTimeout(timer)
+    }, 2000)
 }
 
 </script>

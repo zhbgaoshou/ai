@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { loginApi, infoApi } from '@/api/user'
+import { loginApi, infoApi, registerApi } from '@/api/user'
 import type { IAuthData, IInfo } from '@/types'
 import { setRefreshToken, setToken, getToken, removeToken } from '@/utils/auth'
 
@@ -19,6 +19,9 @@ export const useUserStore = defineStore('user', {
 
     },
     actions: {
+        async register() {
+            await registerApi(this.authData)
+        },
         logout() {
             this.token = ''
             removeToken()
