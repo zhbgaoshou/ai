@@ -1,25 +1,25 @@
 <template>
-  <section class="menu w-72 bg-base-200 justify-between min-h-0 h-full overflow-hidden p-0 transition-all">
+  <section
+    class="menu w-72 bg-base-100 justify-between min-h-0 h-full overflow-hidden transition-all shadow-sm border-[1px] border-base-200">
     <!-- header -->
-    <div class="m-2">
-      <li>
-        <span class="flex justify-between gap-2">
-          <div class="tooltip tooltip-right hidden md:block" data-tip="关闭边栏">
-            <ExpandLeftIcon width="18" @click="$emit('closeSidebar')" />
-          </div>
-          <div class="tooltip tooltip-bottom" data-tip="新对话">
-            <EditIcon width="18" @click.stop="createNewChat" />
-          </div>
-        </span>
-      </li>
 
-    </div>
+    <li>
+      <span class="flex justify-between gap-2">
+        <div class="tooltip tooltip-right hidden md:block" data-tip="关闭边栏">
+          <ExpandLeftIcon width="18" @click="$emit('closeSidebar')" />
+        </div>
+        <div class="tooltip tooltip-bottom" data-tip="新对话">
+          <EditIcon width="18" @click.stop="createNewChat" />
+        </div>
+      </span>
+    </li>
+
     <!-- main -->
-    <SidebarMain class="p-2" />
+    <SidebarMain />
     <!-- footer -->
-    <div class="border-t-[1px] border-base-300 m-2">
+    <div class="border-t-[1px] border-base-300 ">
       <li class="mt-2"><a>升级</a></li>
-      <li class="mt-2"><a>签到</a></li>
+      <li><a>签到</a></li>
     </div>
   </section>
 </template>
