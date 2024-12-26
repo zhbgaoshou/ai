@@ -13,6 +13,7 @@ const router = createRouter({
 
 
 router.beforeEach(async (to, from, next) => {
+    from
     const userStore = useUserStore()
     const token = userStore.token
     const username = userStore.info.username
