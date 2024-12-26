@@ -1,8 +1,7 @@
 <template>
     <div class="drawer min-h-0" :class="{ 'md:drawer-open': !isCollapse }">
         <input id="my-drawer" type="checkbox" class="drawer-toggle" />
-        <div class="drawer-content relative">
-            <Header />
+        <div class="drawer-content relative flex flex-col min-h-0">
             <!-- 控制边栏 的按钮 -->
             <div class="absolute top-[54px] left-2">
                 <!-- h5 -->
@@ -15,6 +14,9 @@
                     <span class="w-[6px] h-[6px] bg-info absolute top-[2px] right-0 rounded-full"></span>
                 </div>
             </div>
+            <Header />
+            <Main />
+            <input type="text" class="h-[100px]" value="iioo">
         </div>
         <div class="drawer-side">
             <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
@@ -29,6 +31,7 @@ import { ref } from 'vue';
 // 组件
 import Sidebar from './Sidebar.vue';
 import Header from "@/components/Header/index.vue";
+import Main from './Main.vue';
 // 图标
 import ExpandLeftIcon from "@/assets/svg/expand-left.svg?component";
 
