@@ -88,26 +88,43 @@ def update_record(
     return db_record
 
 
-# 切换默认记录
 @router.get("/toggle")
-def toggle_record(session: Session = Depends(get_session), record_id: int = 0):
+def toggle_record(
+    session: Session = Depends(get_session), record_id: int | None = None
+):
+    """
+    切换默认记录。
+
+    - 如果提供了 record_id，则将其设置为默认记录，且取消当前默认记录。
+    - 如果没有提供 record_id，则仅取消当前默认记录。
+    """
+    # 查询当前默认记录
     active_record = session.exec(select(Record).where(Record.is_active == True)).first()
 
-    if not active_record:
-        return {"message": "没有默认记录"}
-
-    if record_id != 0:
+    if record_id:  # 当提供了记录 ID 时
+        # 查找待切换的记录
         record = session.get(Record, record_id)
         if not record:
-            raise HTTPException(status_code=404, detail="记录不存在")
-        active_record.is_active = False
-        record.is_active = True
-        session.add(active_record, record)
-        session.commit()
-        return {"message": "切换成功"}
-    else:
+            raise HTTPException(status_code=404, detail="待切换的记录不存在")
+
+        # 取消当前默认记录
         if active_record:
             active_record.is_active = False
             session.add(active_record)
+
+        # 设置新的默认记录
+        record.is_active = True
+        session.add(record)
+        session.commit()
+        return {"message": "切换默认记录成功"}
+
+    else:  # 当未提供记录 ID 时
+        if active_record:  # 存在默认记录
+            active_record.is_active = False
+            session.add(active_record)
             session.commit()
-            return {"message": "删除默认记录成功"}
+            return {"message": "取消默认记录成功"}
+        else:  # 不存在默认记录且未提供记录 ID
+            raise HTTPException(
+                status_code=400, detail="未提供记录 ID，且不存在默认记录"
+            )

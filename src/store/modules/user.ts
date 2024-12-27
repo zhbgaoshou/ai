@@ -23,6 +23,7 @@ export const useUserStore = defineStore("user", {
     logout() {
       this.token = "";
       removeToken();
+      location.reload();
     },
     async login() {
       const res = await loginApi(this.authData);
