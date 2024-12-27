@@ -64,7 +64,7 @@ function emitEditRecord(record: any) {
           <!-- 下拉菜单 -->
           <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-max p-2 shadow">
             <li v-for="item in editData" :key="item.name" @click.stop="deleteOrEdit(record, item.name)">
-              <a :class="{ 'text-error': item.name === '删除' }">
+              <a :class="{ 'text-error': item.name === '删除', 'text-info': item.name === '重命名' }">
                 <component :is="item.icon" width="18" />
                 {{ item.name }}
               </a>

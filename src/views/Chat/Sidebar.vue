@@ -110,5 +110,3 @@ watch(() => userStore.userId, async (newId) => {
 
 
 </script>
-
-<style scoped></style>
