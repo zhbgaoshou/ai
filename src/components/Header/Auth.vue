@@ -22,7 +22,7 @@
     </dialog>
 
     <!-- 登录成功弹窗 -->
-    <div class="toast toast-top toast-end" v-if="isLogingSuccess">
+    <div class="toast toast-top toast-end z-10" v-if="isLogingSuccess">
         <div class="alert alert-info">
             <span class="flex gap-2">
                 <SuccessIcon width="20" />{{ userStore.info.username }} 欢迎回来!!!
@@ -31,7 +31,7 @@
     </div>
 
     <!-- 注册成功弹窗 -->
-    <div class="toast toast-top toast-end" v-if="isRegisterSuccess">
+    <div class="toast toast-top toast-end z-10" v-if="isRegisterSuccess">
         <div class="alert alert-success">
             <span class="flex gap-2">
                 <SuccessIcon width="20" />恭喜，注册成功!!!

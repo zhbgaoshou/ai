@@ -86,3 +86,28 @@ def update_record(
     session.commit()
     session.refresh(db_record)
     return db_record
+
+
+# 切换默认记录
+@router.get("/toggle")
+def toggle_record(session: Session = Depends(get_session), record_id: int = 0):
+    active_record = session.exec(select(Record).where(Record.is_active == True)).first()
+
+    if not active_record:
+        return {"message": "没有默认记录"}
+
+    if record_id != 0:
+        record = session.get(Record, record_id)
+        if not record:
+            raise HTTPException(status_code=404, detail="记录不存在")
+        active_record.is_active = False
+        record.is_active = True
+        session.add(active_record, record)
+        session.commit()
+        return {"message": "切换成功"}
+    else:
+        if active_record:
+            active_record.is_active = False
+            session.add(active_record)
+            session.commit()
+            return {"message": "删除默认记录成功"}

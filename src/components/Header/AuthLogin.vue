@@ -1,13 +1,13 @@
 <template>
-    <form>
+    <form @submit.prevent="$emit('login')">
         <label class="input input-bordered flex items-center gap-2 m-4 rounded-box">
             <UserIcon width="18" />
-            <input type="text" class="grow" placeholder="用户名" v-model="userStore.authData.username" />
+            <input type="text" class="grow" placeholder="用户名" v-model="userStore.authData.username" required />
         </label>
         <label class="input input-bordered flex items-center gap-2 m-4 rounded-box">
             <PasswordIcon width="18" />
             <input :type="showPassword ? 'text' : 'password'" class="grow" placeholder="密码"
-                v-model="userStore.authData.password" />
+                v-model="userStore.authData.password" required minlength="6" />
             <label class="swap swap-flip">
                 <!-- this hidden checkbox controls the state -->
                 <input type="checkbox" v-model="showPassword" />
@@ -18,7 +18,7 @@
         </label>
 
         <div class="flex gap-2 m-2 mt-8">
-            <button type="button" class="btn btn-info flex-1" @click="$emit('login')">登录
+            <button class="btn btn-info flex-1">登录
                 <LoginIcon width="18" />
             </button>
             <button class="btn" type="reset">重置
