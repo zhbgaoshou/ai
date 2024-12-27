@@ -4,7 +4,6 @@ import DeleteIcon from "@/assets/svg/delete.svg?component";
 import PenIcon from "@/assets/svg/pen.svg?component";
 import AiLogoIcon from "@/assets/svg/ai-logo.svg?component";
 
-
 /** 操作数据 */
 const editData = [
   { name: "删除", icon: DeleteIcon },
@@ -20,14 +19,28 @@ const editData = [
       <li class="group">
         <a :class="{ active: i === 1 }">
           <AiLogoIcon />
-          <span class="text-ellipsis">爱是自由意志的沉沦爱是自由意志的沉沦</span>
-          <button :tabindex="0" class="more-drop" data-tip="更多操作" @click.stop>
-            <MoreIcon class=" group-hover:visible" :class="{ invisible: i !== 1 }" />
+          <span class="text-ellipsis"
+            >爱是自由意志的沉沦爱是自由意志的沉沦</span
+          >
+
+          <button
+            :tabindex="0"
+            class="more-drop"
+            data-tip="更多操作"
+            @click.stop
+          >
+            <MoreIcon
+              class="group-hover:visible"
+              :class="{ invisible: i !== 1 }"
+            />
           </button>
         </a>
       </li>
       <!-- 下拉菜单内容 -->
-      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-max p-2 shadow">
+      <ul
+        tabindex="0"
+        class="dropdown-content menu bg-base-100 rounded-box z-[1] w-max p-2 shadow"
+      >
         <li v-for="item in editData" :key="item.name">
           <a :class="{ 'text-error': item.name === '删除' }">
             <component :is="item.icon" width="18" />
