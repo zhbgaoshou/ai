@@ -1,4 +1,8 @@
-from fastapi import APIRouter, Body, Request
+from fastapi import APIRouter, Body, Request, Depends
+from sqlmodel import Session, select
+from models.record import RecordIn, RecordOut, Record
+
+from dependencies import get_session
 
 
 router = APIRouter()
@@ -23,3 +27,13 @@ def get_record(request: Request, input_text: str = Body(..., embed=True)):
     title = completion.choices[0].message.content.strip()
 
     return {"title": title}
+
+
+@router.post("", response_model=RecordOut)
+def create_record(record: RecordIn, session: Session = Depends(get_session)):
+    db_record = Record.model_validate(record)
+    session.add(db_record)
+    session.commit()
+    session.refresh(db_record)
+
+    return db_record
