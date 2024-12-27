@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 min-h-0 overflow-auto px-8">
+  <div class="flex-1 min-h-0 overflow-auto">
     <div class="chat chat-end">
       <div class="chat-bubble">It's over Anakin, I have the high ground.</div>
     </div>
