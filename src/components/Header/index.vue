@@ -2,24 +2,7 @@
   <header class="navbar bg-base-100 shadow-sm min-h-12">
     <!-- 左边 -->
     <div class="flex-1 gap-1">
-      <!-- h5 -->
-      <label
-        for="my-drawer"
-        class="drawer-button md:hidden btn btn-ghost btn-sm btn-circle"
-      >
-        <ExpandLeftIcon width="18" />
-      </label>
-      <!-- pc -->
-
-      <ToolButton
-        tip="打开边栏"
-        class="md:block hidden tooltip-right"
-        v-show="isCollapse"
-        @click="isCollapse = !isCollapse"
-      >
-        <ExpandLeftIcon width="18" />
-      </ToolButton>
-
+      <ToggleSideBar v-model="isCollapse" />
       <ToolButton v-for="item in toolData" :key="item.title" :tip="item.title">
         <component :is="item.icon" width="18" />
       </ToolButton>
@@ -50,11 +33,11 @@
 import ToolButton from "@/components/base/ToolButton.vue";
 import Auth from "./Auth.vue";
 import ThemeMain from "./ThemeMain.vue";
+import ToggleSideBar from "./ToggleSideBar.vue";
 // 引入图标
 import MailIcon from "@/assets/svg/mail.svg?component";
 import MessageIcon from "@/assets/svg/message.svg?component";
 import ThemeIcon from "@/assets/svg/theme.svg?component";
-import ExpandLeftIcon from "@/assets/svg/expand-left.svg?component";
 
 /** 左边的工具栏数据 */
 const toolData = [
