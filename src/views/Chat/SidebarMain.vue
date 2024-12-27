@@ -3,6 +3,7 @@ import MoreIcon from "@/assets/svg/more.svg?component";
 import DeleteIcon from "@/assets/svg/delete.svg?component";
 import PenIcon from "@/assets/svg/pen.svg?component";
 import AiLogoIcon from "@/assets/svg/ai-logo.svg?component";
+import { ref } from "vue";
 
 defineProps(['records'])
 const emit = defineEmits(['toggleRecord', 'deleteRecord', 'editRecord'])
@@ -11,16 +12,18 @@ const editData = [
   { name: "删除", icon: DeleteIcon },
   { name: "重命名", icon: PenIcon },
 ];
-
+const oldRecord = ref({ name: '' })
 function deleteOrEdit(record: any, name: string) {
   if (name === "删除") {
     // 删除
     emit('deleteRecord', record)
   } else {
+    oldRecord.value = { ...record }
     // 重命名
     record.is_edited = !record.is_edited
   }
 }
+/** 编辑 */
 // 定义自定义指令 v-focus
 const vFocus = {
   mounted(el: HTMLElement) {
@@ -32,6 +35,7 @@ const vFocus = {
 };
 function emitEditRecord(record: any) {
   record.is_edited = false
+  if (record.name === oldRecord.value.name) return
   emit('editRecord', record)
 }
 
