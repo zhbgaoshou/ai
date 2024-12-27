@@ -15,8 +15,9 @@
         tip="打开边栏"
         class="md:block hidden tooltip-right"
         v-show="isCollapse"
+        @click="isCollapse = !isCollapse"
       >
-        <ExpandLeftIcon width="18" @click="isCollapse = !isCollapse" />
+        <ExpandLeftIcon width="18" />
       </ToolButton>
 
       <ToolButton v-for="item in toolData" :key="item.title" :tip="item.title">
