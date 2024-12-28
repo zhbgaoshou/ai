@@ -11,6 +11,7 @@ class Message(BaseModel, table=True):
     is_edited: bool = Field(default=False)
     role: str = Field(default="user")
     ai_message_id: str | None = Field(default=None)
+    user_message_id: str | None = Field(default=None)
     record_id: str = Field(index=True, foreign_key="chat_record.id")
     record: "Record" = Relationship(back_populates="messages")
 
@@ -31,3 +32,5 @@ class MessageOut(BaseModel):
     is_edited: bool = Field(default=False)
     role: str = Field(default="user")
     record_id: str = Field(index=True, foreign_key="chat_record.id")
+    ai_message_id: str | None = Field(default=None)
+    user_message_id: str | None = Field(default=None)
