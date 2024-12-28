@@ -6,8 +6,6 @@
         </div>
     </div>
     <!-- 登录 -->
-
-
     <div v-else class="dropdown dropdown-end">
         <label tabindex="0" role="button" class="avatar placeholder btn btn-sm btn-circle">
             <div class="bg-neutral text-neutral-content w-8 rounded-full">
@@ -25,7 +23,6 @@
                     <LogoutIcon width="16" />退出登录
                     <RightArrowIcon width="18" />
                 </a></li>
-
         </ul>
     </div>
 </template>

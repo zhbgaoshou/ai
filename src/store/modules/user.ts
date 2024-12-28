@@ -59,7 +59,6 @@ export const useUserStore = defineStore("user", {
         // 如果 model 是 VIP 且用户不是超级用户，直接返回
         return;
       }
-
       // 如果通过校验，则设置默认模型并保存到本地存储
       this.defaultModel = model;
       localStorage.setItem("defaultModel", JSON.stringify(model));

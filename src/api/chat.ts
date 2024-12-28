@@ -37,10 +37,3 @@ export const getModelsApi = () =>
         url: '/chat/model',
         method: 'get'
     })
-
-// 获取默认模型
-export const getDefaultModelApi = () =>
-    $http<IModel>({
-        url: '/chat/model/default',
-        method: 'get'
-    })

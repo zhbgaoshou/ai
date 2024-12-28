@@ -64,11 +64,6 @@ const stopObserver = () => {
 }
 const loaderRef = useTemplateRef<HTMLSpanElement>('loaderRef')
 const observer = new IntersectionObserver(cb, { threshold: 0.5, rootMargin: '50px' });
-
-
-
-
-
 </script>
 
 <template>
@@ -81,7 +76,8 @@ const observer = new IntersectionObserver(cb, { threshold: 0.5, rootMargin: '50p
       <a :class="{ active: record.is_active }">
         <AiLogoIcon />
         <span v-if="!record.is_edited" class="text-ellipsis">{{ record.name }}</span>
-        <input v-else v-focus @blur="emitEditRecord(record)" @keydown.enter="emitEditRecord(record)"
+        <input v-else v-focus @blur="emitEditRecord(record)"
+          @keydown.enter="(e) => (e.target as HTMLInputElement).blur()"
           class="input-xs input input-ghost w-full max-w-xs" type="text" v-model="record.name">
 
         <!-- 下拉按钮 -->
@@ -110,7 +106,8 @@ const observer = new IntersectionObserver(cb, { threshold: 0.5, rootMargin: '50p
       <a :class="{ active: record.is_active }">
         <AiLogoIcon />
         <span v-if="!record.is_edited" class="text-ellipsis">{{ record.name }}</span>
-        <input v-else v-focus @blur="emitEditRecord(record)" @keydown.enter="emitEditRecord(record)"
+        <input v-else v-focus @blur="emitEditRecord(record)"
+          @keydown.enter="(e) => (e.target as HTMLInputElement).blur()"
           class="input-xs input input-ghost w-full max-w-xs" type="text" v-model="record.name">
 
         <!-- 下拉按钮 -->
@@ -139,7 +136,8 @@ const observer = new IntersectionObserver(cb, { threshold: 0.5, rootMargin: '50p
       <a :class="{ active: record.is_active }">
         <AiLogoIcon />
         <span v-if="!record.is_edited" class="text-ellipsis">{{ record.name }}</span>
-        <input v-else v-focus @blur="emitEditRecord(record)" @keydown.enter="emitEditRecord(record)"
+        <input v-else v-focus @blur="emitEditRecord(record)"
+          @keydown.enter="(e) => (e.target as HTMLInputElement).blur()"
           class="input-xs input input-ghost w-full max-w-xs" type="text" v-model="record.name">
 
         <!-- 下拉按钮 -->

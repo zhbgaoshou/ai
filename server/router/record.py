@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body, Request, Depends, HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 from models.record import RecordIn, RecordOut, Record
-
+import uuid
 from dependencies import get_session, get_page
 
 
@@ -32,6 +32,7 @@ def get_record(request: Request, input_text: str = Body(..., embed=True)):
 @router.post("", response_model=RecordOut)
 async def create_record(record: Record, session: AsyncSession = Depends(get_session)):
     db_record = Record.model_validate(record)
+    db_record.id = uuid.uuid4().hex
     session.add(db_record)
     await session.commit()
     await session.refresh(db_record)
@@ -44,7 +45,7 @@ async def create_record(record: Record, session: AsyncSession = Depends(get_sess
 async def get_records(
     *,
     session: AsyncSession = Depends(get_session),
-    user_id: int,
+    user_id: int | str,
     name: str = "",
     page_data: dict = Depends(get_page),
 ):
@@ -70,7 +71,9 @@ async def get_records(
 
 # 删除会话
 @router.delete("/{record_id}")
-async def delete_record(record_id: int, session: AsyncSession = Depends(get_session)):
+async def delete_record(
+    record_id: int | str, session: AsyncSession = Depends(get_session)
+):
     record = await session.get(Record, record_id)
     if not record:
         raise HTTPException(status_code=404, detail="记录不存在")
@@ -82,7 +85,7 @@ async def delete_record(record_id: int, session: AsyncSession = Depends(get_sess
 # 更新会话
 @router.put("/{record_id}", response_model=RecordOut)
 async def update_record(
-    record_id: int,
+    record_id: int | str,
     record: RecordIn,
     session: AsyncSession = Depends(get_session),
 ):
@@ -100,7 +103,7 @@ async def update_record(
 
 @router.get("/toggle")
 async def toggle_record(
-    session: AsyncSession = Depends(get_session), record_id: int | None = None
+    session: AsyncSession = Depends(get_session), record_id: int | None | str = None
 ):
     """
     切换默认记录。
