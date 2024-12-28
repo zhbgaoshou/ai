@@ -43,7 +43,7 @@ function emitEditRecord(record: any) {
 </script>
 
 <template>
-  <ul class="menu flex-1 overflow-auto mt-8">
+  <ul class="menu flex-1 overflow-auto mt-8 flex-nowrap">
     <li class="menu-title">今天</li>
 
     <!-- 用 v-for 循环 records -->
@@ -52,8 +52,8 @@ function emitEditRecord(record: any) {
       <a :class="{ active: record.is_active }">
         <AiLogoIcon />
         <span v-if="!record.is_edited" class="text-ellipsis">{{ record.name }}</span>
-        <input v-else v-focus @blur="emitEditRecord(record)" class="input-xs input input-ghost w-full max-w-xs"
-          type="text" v-model="record.name">
+        <input v-else v-focus @blur="emitEditRecord(record)" @keydown.enter="emitEditRecord(record)"
+          class="input-xs input input-ghost w-full max-w-xs" type="text" v-model="record.name">
 
         <!-- 下拉按钮 -->
         <div class="dropdown dropdown-end">

@@ -1,5 +1,6 @@
 from datetime import datetime
 from fastapi import APIRouter, Body, Request, Depends, HTTPException
+from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import Session, select
 from models.record import RecordIn, RecordOut, Record
 
@@ -13,7 +14,6 @@ router = APIRouter()
 @router.post("/generate_title")
 def get_record(request: Request, input_text: str = Body(..., embed=True)):
     client = request.app.state.client
-
     prompt = f"Please generate a short title for the following text: {input_text}"
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -24,73 +24,73 @@ def get_record(request: Request, input_text: str = Body(..., embed=True)):
             }
         ],
     )
-
     title = completion.choices[0].message.content.strip()
-
     return {"title": title}
 
 
 @router.post("", response_model=RecordOut)
-def create_record(record: RecordIn, session: Session = Depends(get_session)):
+async def create_record(record: RecordIn, session: AsyncSession = Depends(get_session)):
     db_record = Record.model_validate(record)
     session.add(db_record)
-    session.commit()
-    session.refresh(db_record)
+    await session.commit()
+    await session.refresh(db_record)
 
     return db_record
 
 
 # 获取记录
 @router.get("", response_model=list[RecordOut])
-def get_records(
+async def get_records(
     *,
-    session: Session = Depends(get_session),
+    session: AsyncSession = Depends(get_session),
     user_id: int,
     name: str = "",
     page_data: dict = Depends(get_page),
 ):
-    records = session.exec(
+    records = await session.exec(
         select(Record)
         .where(Record.user_id == user_id, Record.name.like(f"%{name}%"))
+        .order_by(Record.created_at.desc(), Record.id.desc())
         .offset(page_data.get("offset"))
         .limit(page_data.get("limit"))
-    ).all()
-    return records
+    )
+    list_records = records.all()
+    return list_records
 
 
 # 删除会话
 @router.delete("/{record_id}")
-def delete_record(record_id: int, session: Session = Depends(get_session)):
-    record = session.get(Record, record_id)
+async def delete_record(record_id: int, session: AsyncSession = Depends(get_session)):
+    record = await session.get(Record, record_id)
     if not record:
         raise HTTPException(status_code=404, detail="记录不存在")
-    session.delete(record)
-    session.commit()
+    await session.delete(record)
+    await session.commit()
     return {"id": record_id}
 
 
 # 更新会话
 @router.put("/{record_id}", response_model=RecordOut)
-def update_record(
+async def update_record(
     record_id: int,
     record: RecordIn,
-    session: Session = Depends(get_session),
+    session: AsyncSession = Depends(get_session),
 ):
-    db_record = session.get(Record, record_id)
+    db_record = await session.get(Record, record_id)
     if not db_record:
         raise HTTPException(status_code=404, detail="记录不存在")
     record_data = record.model_dump(exclude_unset=True)
     db_record.sqlmodel_update(record_data)
     db_record.updated_at = datetime.now()
     session.add(db_record)
-    session.commit()
-    session.refresh(db_record)
+    await session.commit()
+    await session.refresh(db_record)
     return db_record
 
 
 @router.get("/toggle")
-def toggle_record(
-    session: Session = Depends(get_session), record_id: int | None = None
+async def toggle_record(
+    session: AsyncSession = Depends(get_session), record_id: int | None = None
 ):
     """
     切换默认记录。
@@ -99,11 +99,12 @@ def toggle_record(
     - 如果没有提供 record_id，则仅取消当前默认记录。
     """
     # 查询当前默认记录
-    active_record = session.exec(select(Record).where(Record.is_active == True)).first()
+    active_record = await session.exec(select(Record).where(Record.is_active == True))
+    active_record = active_record.first()
 
     if record_id:  # 当提供了记录 ID 时
         # 查找待切换的记录
-        record = session.get(Record, record_id)
+        record = await session.get(Record, record_id)
         if not record:
             raise HTTPException(status_code=404, detail="待切换的记录不存在")
 
@@ -115,14 +116,14 @@ def toggle_record(
         # 设置新的默认记录
         record.is_active = True
         session.add(record)
-        session.commit()
+        await session.commit()
         return {"message": "切换默认记录成功"}
 
     else:  # 当未提供记录 ID 时
         if active_record:  # 存在默认记录
             active_record.is_active = False
             session.add(active_record)
-            session.commit()
+            await session.commit()
             return {"message": "取消默认记录成功"}
         else:  # 不存在默认记录且未提供记录 ID
             raise HTTPException(
