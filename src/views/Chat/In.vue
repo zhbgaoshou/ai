@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 // vue
-import { useTemplateRef, ref } from "vue";
+import { useTemplateRef } from "vue";
 // 图标
 import UpIcon from "@/assets/svg/up.svg?component";
 import AttaIcon from "@/assets/svg/atta.svg?component";

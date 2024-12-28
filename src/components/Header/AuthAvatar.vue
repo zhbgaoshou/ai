@@ -9,12 +9,12 @@
 
 
     <div v-else class="dropdown dropdown-end">
-        <div tabindex="0" role="button" class="avatar placeholder btn btn-sm btn-circle">
+        <label tabindex="0" role="button" class="avatar placeholder btn btn-sm btn-circle">
             <div class="bg-neutral text-neutral-content w-8 rounded-full">
                 <img v-if="userStore.info.avatar" :src="userStore.info.avatar" @error="avatarError" />
                 <span v-else class="text-xs">{{ userStore.firstName }}</span>
             </div>
-        </div>
+        </label>
         <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
             <li v-for="item in profileData"><a>
                     <component :is="item.icon" width="16"></component>{{ item.title }}
