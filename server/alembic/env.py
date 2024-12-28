@@ -8,6 +8,7 @@ from alembic import context
 from sqlmodel import SQLModel
 from models.record import *
 from models.model import *
+from models.message import *
 
 
 # this is the Alembic Config object, which provides

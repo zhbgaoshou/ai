@@ -1,5 +1,6 @@
 from .base import BaseModel
-from sqlmodel import SQLModel, Field
+from sqlmodel import Relationship, SQLModel, Field
+from .message import Message
 
 
 class Record(BaseModel, table=True):
@@ -10,6 +11,9 @@ class Record(BaseModel, table=True):
     endpoint: str = Field(default=None)
     is_edited: bool = Field(default=False)
     is_active: bool = Field(default=False)
+    messages: list["Message"] = Relationship(
+        back_populates="record", cascade_delete=True
+    )
 
 
 class RecordIn(SQLModel):
