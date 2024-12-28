@@ -7,7 +7,10 @@ export const useUserStore = defineStore("user", {
   state: () => {
     return {
       token: getToken(),
-      authData: {} as IAuthData,
+      authData: {
+        username: "萧炎",
+        password: "xiaoyan",
+      } as IAuthData,
       info: {} as IInfo,
     };
   },

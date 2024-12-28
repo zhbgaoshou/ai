@@ -5,14 +5,10 @@
       <!-- 控制边栏 的按钮 -->
       <Header v-model="isCollapse" />
       <Main />
-      <input type="text" class="h-[100px]" value="iioo" />
+      <In v-model:content="content" />
     </div>
     <div class="drawer-side">
-      <label
-        for="my-drawer"
-        aria-label="close sidebar"
-        class="drawer-overlay"
-      ></label>
+      <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
       <Sidebar @close-sidebar="isCollapse = true" />
     </div>
   </div>
@@ -25,10 +21,13 @@ import { ref } from "vue";
 import Sidebar from "./Sidebar.vue";
 import Header from "@/components/Header/index.vue";
 import Main from "./Main.vue";
-// 图标
+import In from "./In.vue";
 
 // 边栏折叠操作
 const isCollapse = ref(false);
+
+// 数据
+const content = ref("");
 </script>
 
 <style scoped></style>
