@@ -1,5 +1,5 @@
-from fastapi import FastAPI, Request
-from router import record
+from fastapi import FastAPI
+from router import record, model
 from openai import OpenAI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
@@ -23,6 +23,8 @@ app = FastAPI(lifespan=lifespan)
 
 
 app.include_router(record.router, prefix="/chat/record", tags=["record"])
+app.include_router(model.router, prefix="/chat/model", tags=["model"])
+
 
 app.add_middleware(
     CORSMiddleware,

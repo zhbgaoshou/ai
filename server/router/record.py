@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any
 from fastapi import APIRouter, Body, Request, Depends, HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlmodel import Session, select
+from sqlmodel import select
 from models.record import RecordIn, RecordOut, Record
 
 from dependencies import get_session, get_page
@@ -30,7 +30,7 @@ def get_record(request: Request, input_text: str = Body(..., embed=True)):
 
 
 @router.post("", response_model=RecordOut)
-async def create_record(record: RecordIn, session: AsyncSession = Depends(get_session)):
+async def create_record(record: Record, session: AsyncSession = Depends(get_session)):
     db_record = Record.model_validate(record)
     session.add(db_record)
     await session.commit()

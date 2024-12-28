@@ -20,8 +20,12 @@
       @more-loader="moreLoader" />
     <!-- footer -->
     <div class="border-t-[1px] border-base-300 ">
-      <li class="mt-2"><a>升级</a></li>
-      <li><a>签到</a></li>
+      <li class="mt-2"><a>
+          <UpLevelIcon />升级
+        </a></li>
+      <li><a>
+          <SinginIcon width="16" />签到
+        </a></li>
     </div>
   </section>
   <!-- Open the modal using ID.showModal() method -->
@@ -50,6 +54,10 @@ import SidebarMain from "./SidebarMain.vue";
 // 图标
 import EditIcon from "@/assets/svg/edit.svg?component";
 import ExpandLeftIcon from "@/assets/svg/expand-left.svg?component";
+import UpLevelIcon from "@/assets/svg/up-level.svg?component";
+import SinginIcon from "@/assets/svg/singin.svg?component";
+
+
 // type
 import type { IRequestData, IRecord } from '@/types'
 // store

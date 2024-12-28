@@ -6,6 +6,7 @@
                     class="bg-transparent h-12 w-full p-2 outline-none resize-none max-h-80 format-text"
                     placeholder="想问点什么呢"></textarea>
             </form>
+            <!-- 工具 -->
             <div class="flex justify-between items-center">
                 <section class="flex items-center gap-2">
                     <!-- 附件 -->
@@ -22,17 +23,7 @@
                         </div>
                     </div>
                     <!-- 模型 -->
-                    <div class="dropdown dropdown-top">
-                        <div tabindex="0" role="button" class="btn btn-sm text-sm font-normal"
-                            @click.stop="isDropdownShow = !isDropdownShow">
-                            GPT-4o
-                            <ChvronUpIcon width="20" />
-                        </div>
-                        <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                            <li><a>Item 1</a></li>
-                            <li><a>Item 2</a></li>
-                        </ul>
-                    </div>
+                    <ModelView :models="models" />
                 </section>
                 <!-- 发送 -->
                 <div class="tooltip tooltip-base-content tooltip-left" :data-tip="content ? '发送' : '内容为空'">
@@ -51,17 +42,17 @@ import { useTemplateRef, ref } from "vue";
 // 图标
 import UpIcon from "@/assets/svg/up.svg?component";
 import AttaIcon from "@/assets/svg/atta.svg?component";
-import ChvronUpIcon from "@/assets/svg/chvron-up.svg?component";
-import ChvronDownIcon from "@/assets/svg/chvron-down.svg?component";
 
-
+// 组件
+import ModelView from "./ModelView.vue";
 // store
 import { useRecordStore } from '@/store'
-
 const recordStore = useRecordStore()
 
 
+
 const content = defineModel<string>('content')
+defineProps(['models'])
 
 // 监听 textarea 的内容变化
 const textareaRef = useTemplateRef<HTMLTextAreaElement>('textareaRef')
@@ -72,9 +63,6 @@ function inputChange() {
     textareaRef.value!.style.height = 'auto'
     textareaRef.value!.style.height = textareaRef.value!.scrollHeight + 'px'
 }
-
-
-let isDropdownShow = ref(false)
 
 </script>
 

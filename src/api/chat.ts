@@ -1,5 +1,5 @@
 import { $http } from '../utils/http2'
-import type { IRequestData, IRecord } from '@/types'
+import type { IRequestData, IRecord, IModel } from '@/types'
 // 获取记录列表
 export const getRecordsApi = (data: IRequestData) =>
     $http<{ data: IRecord[], next: boolean }>({
@@ -29,4 +29,18 @@ export const editRecordApi = (data: IRecord) =>
         url: `/chat/record/${data.id}`,
         method: 'put',
         data
+    })
+
+// 获取模型列表
+export const getModelsApi = () =>
+    $http<IModel[]>({
+        url: '/chat/model',
+        method: 'get'
+    })
+
+// 获取默认模型
+export const getDefaultModelApi = () =>
+    $http<IModel>({
+        url: '/chat/model/default',
+        method: 'get'
     })
