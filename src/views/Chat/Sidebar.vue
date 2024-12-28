@@ -15,8 +15,9 @@
     </li>
 
     <!-- main -->
-    <SidebarMain :records="recordStore.records" @toggle-record="toggleRecord" @delete-record="deleteRecord"
-      @edit-record="editRecord" />
+    <SidebarMain :categorized-records="recordStore.categorized" @toggle-record="toggleRecord"
+      @delete-record="deleteRecord" @edit-record="editRecord" :is-show-loader="isShowLoaderRef"
+      @more-loader="moreLoader" />
     <!-- footer -->
     <div class="border-t-[1px] border-base-300 ">
       <li class="mt-2"><a>升级</a></li>
@@ -53,6 +54,7 @@ import ExpandLeftIcon from "@/assets/svg/expand-left.svg?component";
 import type { IRequestData, IRecord } from '@/types'
 // store
 import { useRecordStore, useUserStore } from '@/store'
+
 const recordStore = useRecordStore()
 const userStore = useUserStore()
 
@@ -65,20 +67,36 @@ const createNewChat = () => {
 
 // 获取对话列表
 let requestData = reactive<IRequestData>({
-  page: 0,
-  page_size: 10,
+  page: 1,
+  page_size: 20,
   user_id: userStore.userId,
   name: ''
 })
+let isShowLoaderRef = ref(false)
 async function getRecords() {
   await recordStore.getRecords(requestData)
+  isShowLoaderRef.value = true
+}
+
+const moreLoader = async () => {
+  if (recordStore.next) {
+    requestData.page++
+    await getRecords()
+  } else {
+    isShowLoaderRef.value = false
+  }
 }
 
 // 切换对话记录
 async function toggleRecord(record: IRecord) {
   if (record.id === recordStore.activeRecordId) return
   await recordStore.toggleRecord(record.id)
-  await getRecords()
+  // 直接在本地更新需要修改的记录，而不是重新获取记录
+  recordStore.activeRecord.is_active = false;
+
+  recordStore.records.forEach(r => {
+    if (r.id === record.id) r.is_active = !r.is_active;
+  });
 }
 
 // 删除对话记录
@@ -93,11 +111,13 @@ async function deleteRecord(record: IRecord) {
 async function deleteRecordHandler() {
   await recordStore.deleteRecord(deleteRecordDetail.value.id)
   modal.value?.close()
-  await getRecords()
+  // 本地移除该记录
+  recordStore.records = recordStore.records.filter(r => r.id !== deleteRecordDetail.value.id);
 }
 
 // 编辑对话记录
 async function editRecord(record: IRecord) {
+  if (!record.name) return
   await recordStore.editRecord(record)
 }
 

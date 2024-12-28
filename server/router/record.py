@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 from fastapi import APIRouter, Body, Request, Depends, HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import Session, select
@@ -39,7 +40,7 @@ async def create_record(record: RecordIn, session: AsyncSession = Depends(get_se
 
 
 # 获取记录
-@router.get("", response_model=list[RecordOut])
+@router.get("", response_model=dict[str, Any])
 async def get_records(
     *,
     session: AsyncSession = Depends(get_session),
@@ -47,15 +48,24 @@ async def get_records(
     name: str = "",
     page_data: dict = Depends(get_page),
 ):
+    page_size = (page_data.get("offset") - 1) * page_data.get("limit")
     records = await session.exec(
         select(Record)
         .where(Record.user_id == user_id, Record.name.like(f"%{name}%"))
         .order_by(Record.created_at.desc(), Record.id.desc())
-        .offset(page_data.get("offset"))
-        .limit(page_data.get("limit"))
+        .offset(page_size)
+        .limit(page_data.get("limit") + 1)
     )
     list_records = records.all()
-    return list_records
+    # 判断是否有下一页
+    has_next = len(list_records) > page_data.get("limit")
+    if has_next:
+        list_records = list_records[:-1]  # 移除多查询的一条数据
+
+    return {
+        "next": has_next,
+        "data": list_records,
+    }
 
 
 # 删除会话

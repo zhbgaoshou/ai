@@ -2,7 +2,7 @@ import { $http } from '../utils/http2'
 import type { IRequestData, IRecord } from '@/types'
 // 获取记录列表
 export const getRecordsApi = (data: IRequestData) =>
-    $http<IRecord[]>({
+    $http<{ data: IRecord[], next: boolean }>({
         url: '/chat/record',
         method: 'get',
         params: data

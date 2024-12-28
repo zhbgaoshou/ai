@@ -7,7 +7,7 @@ class BaseModel(SQLModel):
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime | None = Field(default=None)
 
-    class Config:
-        json_encoders = {
-            datetime: lambda v: v.strftime("%Y-%m-%d %H:%M:%S"),
-        }
+    # class Config:
+    #     json_encoders = {
+    #         datetime: lambda v: v.strftime("%Y-%m-%d %H:%M:%S"),
+    #     }
