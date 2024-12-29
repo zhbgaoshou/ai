@@ -1,6 +1,6 @@
 <template>
   <section
-    class="menu w-72 bg-base-100 justify-between min-h-0 h-full overflow-hidden transition-all shadow-sm border-[1px] border-base-200">
+    class="menu p-0 w-72 bg-base-100 justify-between min-h-0 h-full transition-all shadow-sm border-[1px] border-base-200">
     <!-- header -->
 
     <li>

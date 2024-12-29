@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 min-h-0 overflow-auto w-full md:w-[80%] m-auto">
+  <div class="flex-1 min-h-0 w-full md:w-[80%] m-auto">
     <div class="chat chat-end">
       <div class="chat-image">
         <Avatar v-model="src" size="8" :error-char="userStore.firstName" />
