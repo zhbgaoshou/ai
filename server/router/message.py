@@ -181,10 +181,12 @@ async def chat(
         ai_content = ""
         try:
             # 调用OpenAI API
-            completion = chat_service.client.chat.completions.create(
-                model=message.model,
-                messages=send_messages,
-                stream=True,
+            completion: list[ChatCompletion] = (
+                chat_service.client.chat.completions.create(
+                    model=message.model,
+                    messages=send_messages,
+                    stream=True,
+                )
             )
 
             for chunk in completion:
