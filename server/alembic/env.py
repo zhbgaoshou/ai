@@ -2,8 +2,11 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+
 from sqlmodel import SQLModel
-from models import index
+from models.model import *
+from models.record import *
+from models.message import *
 
 from alembic import context
 

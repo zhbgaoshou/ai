@@ -154,17 +154,6 @@ async def chat(
     response: Response,
     session: AsyncSession = Depends(get_session),
 ) -> EventSourceResponse:
-    """流式聊天接口
-
-    Args:
-        request: FastAPI请求对象
-        message: 用户消息
-        response: FastAPI响应对象
-        session: 数据库会话
-
-    Returns:
-        EventSourceResponse: 流式响应
-    """
     # 初始化服务
     chat_service = ChatService(session, request.app.state.openai_client)
 

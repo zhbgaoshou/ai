@@ -59,7 +59,7 @@ async def delete_model(
     return {"message": "模型已删除"}
 
 
-@router.post("/default")
+@router.post("/model_user_link", summary="模型和用户的关联表，用户是拥有这个模型的权限")
 async def add_default_model(
     *,
     session: AsyncSession = Depends(get_session),
