@@ -3,11 +3,10 @@ from fastapi import APIRouter, Request, Depends, Response
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 from models.message import Message, MessageIn
-from dependencies import get_session
+from dependencies import get_page, get_session
 import uuid
 import json
 from sse_starlette import EventSourceResponse
-from fastapi.encoders import jsonable_encoder
 from openai.types.chat import ChatCompletion
 from openai import AsyncOpenAI
 
@@ -85,7 +84,7 @@ class ChatService:
             content=user_message,
             ai_message_id=ai_id,
             role="user",
-            unfinished=True,
+            unfinished=False,
             user_id=message_params.user_id,
             model=message_params.model,
             record_id=message_params.record_id,
@@ -97,7 +96,7 @@ class ChatService:
             content=ai_message,
             user_message_id=user_id,
             role="assistant",
-            unfinished=True,
+            unfinished=False,
             user_id=message_params.user_id,
             model=message_params.model,
             record_id=message_params.record_id,
@@ -127,7 +126,9 @@ class StreamResponse:
         response.headers["Connection"] = "keep-alive"
 
     @staticmethod
-    def create_response(text: str, finish: bool = False, data: dict = None) -> str:
+    def create_response(
+        text: str, finish: bool = False, data: dict = None, start: bool = False
+    ) -> str:
         """创建SSE响应数据
 
         Args:
@@ -138,15 +139,13 @@ class StreamResponse:
         Returns:
             str: JSON格式的响应数据
         """
-        response = {
-            "text": text,
-            "finish": finish,
-        }
+        response = {"text": text, "finish": finish, "start": start}
         if data:
             response["data"] = data
         return json.dumps(response, ensure_ascii=False)
 
 
+# 流式响应
 @router.post("/stream")
 async def chat(
     request: Request,
@@ -154,6 +153,7 @@ async def chat(
     response: Response,
     session: AsyncSession = Depends(get_session),
 ) -> EventSourceResponse:
+    print(message)
     # 初始化服务
     chat_service = ChatService(session, request.app.state.openai_client)
 
@@ -184,18 +184,54 @@ async def chat(
                     if delta_content:
                         ai_content += delta_content
                         yield StreamResponse.create_response(delta_content)
+                    elif delta_content == "":
+                        yield StreamResponse.create_response(
+                            "", finish=False, start=True
+                        )
                 else:
                     # 流式响应结束，保存消息
                     yield StreamResponse.create_response(
-                        "", finish=True, data=chunk.dict()
+                        "", finish=True, data=chunk.model_dump()
                     )
                     await chat_service.save_messages(
                         message.content, ai_content, message
                     )
 
         except Exception as e:
+            message = session.get(Message, message.record_id)
+            if message:
+                message.unfinished = True
+                await session.commit()
             yield StreamResponse.create_response(
                 "", finish=True, data={"error": str(e)}
             )
 
     return EventSourceResponse(event_stream())
+
+
+# 获取消息
+@router.get("")
+async def get_message(
+    record_id: str | int,
+    session: AsyncSession = Depends(get_session),
+    page_data: dict = Depends(get_page),
+):
+    page_size = (page_data.get("offset") - 1) * page_data.get("limit")
+    results = await session.exec(
+        select(Message)
+        .where(Message.record_id == record_id)
+        .order_by(Message.created_at.desc())
+        .offset(page_size)
+        .limit(page_data.get("limit") + 1)
+    )
+    messages: list = results.all()
+    messages.reverse()
+    # 判断是否有下一页
+    has_next = len(messages) > page_data.get("limit")
+    if has_next:
+        messages = messages[:-1]  # 移除多查询的一条数据
+
+    return {
+        "next": has_next,
+        "data": messages,
+    }

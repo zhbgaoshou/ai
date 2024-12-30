@@ -1,137 +1,198 @@
-在 CSS 中，通过 `cursor` 属性可以设置鼠标在不同状态下的形状。要实现“鼠标抓东西”的效果，你可以使用 CSS 的 `cursor` 属性和一些特定的值，如 `grab` 和 `grabbing`。
+在 `highlight.js` 11.11.1 版本中，`highlightBlock` 方法已经被废弃，官方推荐使用新的 `highlightElement` 方法或者直接调用 `highlight` 方法。以下是如何自定义高亮代码，并获取代码块的语言的示例。
 
-### 示例代码
+---
 
-```css
-.grabbable {
-    cursor: grab; /* 默认抓取效果 */
+### 方案：使用 `highlight.js` 的新 API `highlight` 或 `highlightElement`
+
+#### 方法一：通过 `highlight` 手动高亮代码（推荐）
+
+`highlight` 方法允许我们直接指定语言，并返回高亮后的 HTML。
+
+```typescript
+import hljs from "highlight.js";
+import "highlight.js/styles/atom-one-dark.css";
+
+export default function (el: HTMLElement) {
+  // 获取所有 <pre> 标签
+  const blocks = el.querySelectorAll("pre code");
+
+  blocks.forEach((block: HTMLElement) => {
+    const code = block.innerText; // 获取代码内容
+    const lang = block.className.replace("language-", ""); // 获取语言名称
+
+    if (lang && hljs.getLanguage(lang)) {
+      // 如果指定了语言，使用该语言高亮
+      const result = hljs.highlight(code, { language: lang });
+      block.innerHTML = result.value;
+    } else {
+      // 如果没有指定语言，自动检测
+      const result = hljs.highlightAuto(code);
+      block.innerHTML = result.value;
+
+      // 自动检测语言后，可以通过 result.language 拿到检测到的语言
+      block.setAttribute(
+        "data-detected-language",
+        result.language || "unknown"
+      );
+    }
+
+    // 添加 hljs 类名以应用样式
+    block.classList.add("hljs");
+  });
 }
+```
 
-.grabbable:active {
-    cursor: grabbing; /* 当点击/按住时显示抓取中的效果 */
+---
+
+#### 方法二：使用 `highlightElement` 自动高亮（适合动态渲染内容）
+
+`highlightElement` 方法会根据 `<code>` 元素的 `class` 自动检测语言。
+
+```typescript
+import hljs from "highlight.js";
+import "highlight.js/styles/atom-one-dark.css";
+
+export default function (el: HTMLElement) {
+  // 获取所有 <pre><code> 标签
+  const blocks = el.querySelectorAll("pre code");
+
+  blocks.forEach((block: HTMLElement) => {
+    // 自动检测并高亮代码
+    hljs.highlightElement(block);
+
+    // 获取语言
+    const detectedLang = block.getAttribute("class")?.replace("language-", "");
+    console.log("Detected language:", detectedLang || "unknown");
+  });
 }
 ```
 
-### 效果说明
+---
 
-1. **`grab`**:
-   - 鼠标显示为一个手的形状，表示可以拖动或抓取的元素。
-2. **`grabbing`**:
-   - 鼠标显示为一个抓紧的手的形状，表示正在抓取或拖动元素。
+### 区别
 
-------
+| 方法               | 使用场景                        | 优点                                                                       | 缺点                            |
+| ------------------ | ------------------------------- | -------------------------------------------------------------------------- | ------------------------------- |
+| `highlight`        | 手动传入代码和语言              | 灵活，可以完全控制代码高亮的逻辑。支持自动检测语言并获取检测结果。         | 需要自己管理代码内容和语言。    |
+| `highlightElement` | 自动从 DOM 获取代码和语言并高亮 | 简单，直接操作 DOM 元素，支持从 `class` 属性中获取语言信息，无需额外处理。 | 只能用于静态渲染后的 DOM 内容。 |
 
-### 示例 HTML 和完整代码
+---
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>抓东西效果</title>
-    <style>
-        .grabbable {
-            cursor: grab;
-            width: 200px;
-            height: 100px;
-            background-color: lightblue;
-            border: 2px solid #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none; /* 禁止选中文字 */
-        }
+### 获取语言并添加自定义逻辑
 
-        .grabbable:active {
-            cursor: grabbing;
-            background-color: lightcoral; /* 抓取时改变背景颜色（可选） */
-        }
-    </style>
-</head>
-<body>
-    <div class="grabbable">抓我试试</div>
-</body>
-</html>
+以下示例展示如何获取语言，并在语言匹配后添加自定义逻辑：
+
+```typescript
+import hljs from "highlight.js";
+import "highlight.js/styles/atom-one-dark.css";
+
+export default function (el: HTMLElement) {
+  // 获取所有 <pre><code> 标签
+  const blocks = el.querySelectorAll("pre code");
+
+  blocks.forEach((block: HTMLElement) => {
+    // 自动检测并高亮代码
+    hljs.highlightElement(block);
+
+    // 获取语言
+    const lang = block.className.replace("language-", "");
+    if (lang === "javascript") {
+      console.log("This is JavaScript code!");
+    } else if (lang === "python") {
+      console.log("This is Python code!");
+    } else {
+      console.log("Unknown or no language detected.");
+    }
+  });
+}
 ```
 
-------
+---
 
-### 实现可拖动功能（可选）
+### 自定义扩展高亮逻辑
 
-如果你想让元素不仅有抓取效果，还能通过鼠标拖动移动，可以结合 JavaScript 来实现。
+如果需要完全自定义逻辑，可以手动构造高亮的结果：
 
-#### 可拖动示例
+```typescript
+import hljs from "highlight.js";
+import "highlight.js/styles/atom-one-dark.css";
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>抓东西拖动</title>
-    <style>
-        .draggable {
-            cursor: grab;
-            width: 200px;
-            height: 100px;
-            background-color: lightblue;
-            border: 2px solid #333;
-            position: absolute;
-            top: 100px;
-            left: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none;
-        }
+export default function (el: HTMLElement) {
+  // 获取所有 <pre><code> 标签
+  const blocks = el.querySelectorAll("pre code");
 
-        .draggable:active {
-            cursor: grabbing;
-        }
-    </style>
-</head>
-<body>
-    <div class="draggable">拖动我</div>
+  blocks.forEach((block: HTMLElement) => {
+    const code = block.innerText; // 获取代码内容
+    const lang = block.className.replace("language-", ""); // 获取语言
 
-    <script>
-        const draggable = document.querySelector('.draggable');
+    let highlightedCode = "";
 
-        let isDragging = false;
-        let offsetX = 0, offsetY = 0;
+    if (lang && hljs.getLanguage(lang)) {
+      // 使用指定语言高亮
+      highlightedCode = hljs.highlight(code, { language: lang }).value;
+    } else {
+      // 自动检测语言并高亮
+      const result = hljs.highlightAuto(code);
+      highlightedCode = result.value;
 
-        draggable.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            offsetX = e.offsetX;
-            offsetY = e.offsetY;
-            draggable.style.cursor = 'grabbing';
-        });
+      // 如果需要，可以在这里获取检测到的语言
+      console.log("Detected language:", result.language || "unknown");
+    }
 
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            draggable.style.left = `${e.pageX - offsetX}px`;
-            draggable.style.top = `${e.pageY - offsetY}px`;
-        });
-
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-            draggable.style.cursor = 'grab';
-        });
-    </script>
-</body>
-</html>
+    // 自定义处理高亮后的 HTML
+    block.innerHTML = highlightedCode;
+    block.classList.add("hljs");
+  });
+}
 ```
 
-### 说明
+---
 
-1. **HTML**:
-   - 创建一个可拖动的元素。
-2. **CSS**:
-   - 使用 `cursor: grab` 和 `cursor: grabbing` 设置鼠标形状。
-   - 使用 `position: absolute` 让元素可以通过 JavaScript 改变位置。
-3. **JavaScript**:
-   - `mousedown`: 记录鼠标按下的位置并开启拖动模式。
-   - `mousemove`: 实时更新元素的位置。
-   - `mouseup`: 停止拖动模式。
+### 动态渲染时如何高亮
 
-完成后，你可以拖动元素，同时鼠标形状会动态改变，非常直观！
+如果代码块是通过异步渲染（如 `v-for` 或 `v-if`）动态生成的，可以在数据加载完成后调用高亮方法：
+
+#### 在 Vue 组件中：
+
+```vue
+<template>
+  <div ref="codeContainer">
+    <pre><code class="language-javascript">console.log('Hello, World!');</code></pre>
+    <pre><code class="language-python">print('Hello, World!')</code></pre>
+  </div>
+</template>
+
+<script lang="ts">
+import { onMounted, ref } from "vue";
+import hljs from "highlight.js";
+import "highlight.js/styles/atom-one-dark.css";
+
+export default {
+  name: "CodeHighlighter",
+  setup() {
+    const codeContainer = ref<HTMLElement | null>(null);
+
+    onMounted(() => {
+      if (codeContainer.value) {
+        const blocks = codeContainer.value.querySelectorAll("pre code");
+        blocks.forEach((block) => {
+          hljs.highlightElement(block as HTMLElement);
+        });
+      }
+    });
+
+    return { codeContainer };
+  },
+};
+</script>
+```
+
+---
+
+### 总结
+
+- `highlight.js` 11+ 推荐使用 `highlight` 和 `highlightElement` 方法。
+- 如果需要获取语言，可以通过 `class` 属性或 `highlightAuto` 的返回值。
+- 适配动态渲染时，记得在 DOM 完成更新后调用高亮逻辑。
+
+这两种方式都可以很好地适配你的场景。选择具体方法时，可以根据项目需求决定。

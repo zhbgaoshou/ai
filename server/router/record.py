@@ -29,10 +29,14 @@ def get_record(request: Request, input_text: str = Body(..., embed=True)):
     return {"title": title}
 
 
+# 创建记录
 @router.post("", response_model=RecordOut)
 async def create_record(record: Record, session: AsyncSession = Depends(get_session)):
     db_record = Record.model_validate(record)
-    db_record.id = uuid.uuid4().hex
+    db_record.id = record.id
+    if not db_record.id:
+        db_record.id = uuid.uuid4().hex
+
     session.add(db_record)
     await session.commit()
     await session.refresh(db_record)

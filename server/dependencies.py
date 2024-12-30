@@ -9,7 +9,7 @@ async def get_session():
 
 
 def get_page(
-    offset: int = Query(default=0, alias="page"),
+    offset: int = Query(default=1, alias="page"),
     limit: int = Query(default=10, le=500, alias="page_size"),
 ):
     return {"offset": offset, "limit": limit}
