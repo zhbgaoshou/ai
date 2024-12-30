@@ -5,7 +5,7 @@
         <div class="chat-bubble pre ">{{ message.content }}</div>
       </div>
       <div class="chat chat-start" v-else>
-        <div class="hidden md:block placeholder chat-image avatar py-2">
+        <div class="placeholder chat-image avatar py-2">
           <div class="w-8 bg-base-200  rounded-full">
             <AiLogo />
           </div>
