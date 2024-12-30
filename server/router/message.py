@@ -1,8 +1,11 @@
+from datetime import datetime
+import time
 from typing import AsyncGenerator, List, Dict
 from fastapi import APIRouter, Request, Depends, Response
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 from models.message import Message, MessageIn
+from models.record import Record
 from dependencies import get_page, get_session
 import uuid
 import json
@@ -63,7 +66,11 @@ class ChatService:
         return [system_prompt] + history_messages + [user_message]
 
     async def save_messages(
-        self, user_message: str, ai_message: str, message_params: MessageIn
+        self,
+        user_message: str,
+        ai_message: str,
+        message_params: MessageIn,
+        unfinished=False,
     ) -> tuple[Message, Message]:
         """保存用户消息和AI回复
 
@@ -77,6 +84,22 @@ class ChatService:
         """
         user_id = uuid.uuid4().hex
         ai_id = uuid.uuid4().hex
+        r_id = uuid.uuid4().hex
+
+        if not message_params.record_id:
+            record_data = Record(
+                id=r_id,
+                name="新会话",
+                model=message_params.model,
+                user_id=message_params.user_id,
+                endpoint=message_params.endpoint,
+                is_edited=False,
+                is_active=True,
+            )
+            self.session.add(record_data)
+            await self.session.commit()
+        else:
+            r_id = message_params.record_id
 
         # 创建用户消息记录
         user_data = Message(
@@ -84,10 +107,11 @@ class ChatService:
             content=user_message,
             ai_message_id=ai_id,
             role="user",
-            unfinished=False,
+            unfinished=unfinished,
             user_id=message_params.user_id,
             model=message_params.model,
-            record_id=message_params.record_id,
+            record_id=r_id,
+            created_at_timestamp=time.time(),
         )
 
         # 创建AI消息记录
@@ -96,15 +120,15 @@ class ChatService:
             content=ai_message,
             user_message_id=user_id,
             role="assistant",
-            unfinished=False,
+            unfinished=unfinished,
             user_id=message_params.user_id,
             model=message_params.model,
-            record_id=message_params.record_id,
+            record_id=r_id,
+            created_at_timestamp=time.time() + 1,
         )
 
         # 保存消息
         self.session.add(user_data)
-        await self.session.commit()
         self.session.add(ai_data)
         await self.session.commit()
 
@@ -153,7 +177,6 @@ async def chat(
     response: Response,
     session: AsyncSession = Depends(get_session),
 ) -> EventSourceResponse:
-    print(message)
     # 初始化服务
     chat_service = ChatService(session, request.app.state.openai_client)
 
@@ -168,6 +191,7 @@ async def chat(
 
     async def event_stream() -> AsyncGenerator[str, None]:
         ai_content = ""
+        unfinished = False
         try:
             # 调用OpenAI API
             completion: list[ChatCompletion] = (
@@ -193,17 +217,16 @@ async def chat(
                     yield StreamResponse.create_response(
                         "", finish=True, data=chunk.model_dump()
                     )
-                    await chat_service.save_messages(
-                        message.content, ai_content, message
-                    )
 
         except Exception as e:
-            message = session.get(Message, message.record_id)
-            if message:
-                message.unfinished = True
-                await session.commit()
+            unfinished = True
             yield StreamResponse.create_response(
-                "", finish=True, data={"error": str(e)}
+                "", finish=True, data={"error": "响应错误"}
+            )
+        finally:
+            print("保存消息")
+            await chat_service.save_messages(
+                message.content, ai_content, message, unfinished=unfinished
             )
 
     return EventSourceResponse(event_stream())
@@ -220,11 +243,14 @@ async def get_message(
     results = await session.exec(
         select(Message)
         .where(Message.record_id == record_id)
-        .order_by(Message.created_at.desc())
+        .order_by(Message.created_at_timestamp.desc())
         .offset(page_size)
         .limit(page_data.get("limit") + 1)
     )
     messages: list = results.all()
+    for message in messages:
+        print(message.created_at)
+        print(datetime.now())
     messages.reverse()
     # 判断是否有下一页
     has_next = len(messages) > page_data.get("limit")

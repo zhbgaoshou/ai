@@ -1,40 +1,23 @@
 <template>
   <div class="flex justify-center p-2">
-    <form
-      @submit.prevent="$emit('send')"
-      class="w-full md:w-[80%] bg-base-200 p-2 rounded-[20px]"
-    >
+    <form @submit.prevent="$emit('send')" class="w-full md:w-[80%] max-w-[780px] bg-base-200 p-2 rounded-[20px]">
       <div>
-        <textarea
-          @input="inputChange"
-          ref="textareaRef"
-          key="textareaRef"
-          @keydown.enter.prevent="submit"
-          v-model.trim="content"
-          class="bg-transparent h-12 w-full p-2 outline-none resize-none max-h-80 format-text"
-          placeholder="想问点什么呢"
-        ></textarea>
+        <textarea @input="inputChange" ref="textareaRef" key="textareaRef" @keydown.enter.prevent="submit"
+          v-model.trim="content" class="bg-transparent h-12 w-full p-2 outline-none resize-none max-h-80 format-text"
+          placeholder="想问点什么呢"></textarea>
       </div>
       <!-- 工具 -->
       <div class="flex justify-between items-center">
         <section class="flex items-center gap-2">
           <!-- 附件 -->
           <div class="dropdown dropdown-hover dropdown-top">
-            <div
-              tabindex="0"
-              role="button"
-              class="btn btn-sm btn-circle"
-              :class="{
-                'btn-disabled': recordStore.activeRecord.model !== 'gpt-4o',
-              }"
-            >
+            <div tabindex="0" role="button" class="btn btn-sm btn-circle" :class="{
+              'btn-disabled': recordStore.activeRecord.model !== 'gpt-4o',
+            }">
               <AttaIcon width="20" height="20" />
             </div>
-            <div
-              tabindex="0"
-              v-show="recordStore.activeRecord.model !== 'gpt-4o'"
-              class="dropdown-content card card-compact bg-primary text-primary-content z-[1] w-64 p-2 shadow"
-            >
+            <div tabindex="0" v-show="recordStore.activeRecord.model !== 'gpt-4o'"
+              class="dropdown-content card card-compact bg-primary text-primary-content z-[1] w-64 p-2 shadow">
               <div class="card-body">
                 当前模型不支持附件，请切换到 gpt-4o 模型
               </div>
@@ -44,14 +27,8 @@
           <ModelView :models="models" />
         </section>
         <!-- 发送 -->
-        <div
-          class="tooltip tooltip-base-content tooltip-left"
-          :data-tip="content ? '发送' : '内容为空'"
-        >
-          <button
-            class="btn btn-sm btn-circle"
-            :class="{ 'btn-disabled': !content }"
-          >
+        <div class="tooltip tooltip-base-content tooltip-left" :data-tip="content ? '发送' : '内容为空'">
+          <button class="btn btn-sm btn-circle" :class="{ 'btn-disabled': !content }">
             <UpIcon width="20" />
           </button>
         </div>
@@ -62,7 +39,7 @@
 
 <script setup lang="ts">
 // vue
-import { useTemplateRef } from "vue";
+import { useTemplateRef, watch } from "vue";
 // 图标
 import UpIcon from "@/assets/svg/up.svg?component";
 import AttaIcon from "@/assets/svg/atta.svg?component";
@@ -83,6 +60,12 @@ function submit() {
     emit("send");
   }
 }
+
+watch(content, (value) => {
+  if (!value) {
+    textareaRef.value!.style.height = "48px"
+  }
+})
 
 // 监听 textarea 的内容变化
 const textareaRef = useTemplateRef<HTMLTextAreaElement>("textareaRef");

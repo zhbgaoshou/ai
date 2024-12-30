@@ -11,7 +11,7 @@ html {
 /* 滚动条样式 */
 *::-webkit-scrollbar {
   width: 6px;
-  height: 6px;
+  height: 8px;
 }
 
 /* 滚动条滑块（里面小方块） */
@@ -38,4 +38,8 @@ input:focus {
   outline: none;
   border: none;
   box-shadow: none;
+}
+
+pre {
+  width: 100% !important;
 }

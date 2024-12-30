@@ -1,5 +1,5 @@
 import { $http } from "../utils/http2";
-import type { IRequestData, IRecord, IModel } from "@/types";
+import type { IRequestData, IRecord, IModel, IMessage, IMessageRequest } from "@/types";
 // 获取记录列表
 export const getRecordsApi = (data: IRequestData) =>
   $http<{ data: IRecord[]; next: boolean }>({
@@ -43,4 +43,12 @@ export const getModelsApi = () =>
   $http<IModel[]>({
     url: "/chat/model",
     method: "get",
+  });
+
+// 获取聊天记录
+export const getMessagesApi = (data: IMessageRequest) =>
+  $http<{ data: IMessage[]; next: boolean }>({
+    url: "/chat/message",
+    method: "get",
+    params: data,
   });

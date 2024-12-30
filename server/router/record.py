@@ -62,6 +62,7 @@ async def get_records(
         .limit(page_data.get("limit") + 1)
     )
     list_records = records.all()
+
     # 判断是否有下一页
     has_next = len(list_records) > page_data.get("limit")
     if has_next:

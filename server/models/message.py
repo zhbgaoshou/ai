@@ -1,4 +1,3 @@
-# from sqlalchemy import Column
 from .base import BaseModel
 from sqlmodel import Field, Relationship, SQLModel
 from sqlalchemy import Column, Text
@@ -25,6 +24,7 @@ class MessageIn(SQLModel):
     model: str = Field(default="gpt-3.5-turbo")
     role: str = Field(default="user")
     record_id: str = Field(index=True, foreign_key="chat_record.id")
+    endpoint: str = Field(default=None)
 
 
 class MessageOut(BaseModel):

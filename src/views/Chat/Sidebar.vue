@@ -1,10 +1,8 @@
 <template>
   <section
-    class="menu p-0 w-72 bg-base-100 justify-between min-h-0 h-full transition-all shadow-sm border-[1px] border-base-200"
-    id="sidebar"
-  >
+    class="menu p-0 w-64 bg-base-100 justify-between min-h-0 h-full transition-all shadow-sm border-[1px] border-base-200"
+    id="sidebar">
     <!-- header -->
-
     <li class="m-3">
       <span class="flex justify-between gap-2 !bg-transparent">
         <div class="tooltip tooltip-right hidden md:block" data-tip="关闭边栏">
@@ -17,30 +15,25 @@
     </li>
 
     <!-- main -->
-    <SidebarMain
-      :categorized-records="recordStore.categorized"
-      @toggle-record="toggleRecord"
-      @delete-record="deleteRecord"
-      @edit-record="editRecord"
-      :is-show-loader="isShowLoaderRef"
-      @more-loader="moreLoader"
-    />
+    <SidebarMain :categorized-records="recordStore.categorized" @toggle-record="toggleRecord"
+      @delete-record="deleteRecord" @edit-record="editRecord" :is-show-loader="isShowLoaderRef"
+      @more-loader="moreLoader" />
     <!-- footer -->
     <div class="border-t-[1px] border-base-300 px-3">
       <li class="mt-2">
-        <a> <UpLevelIcon />升级 </a>
+        <a>
+          <UpLevelIcon />升级
+        </a>
       </li>
       <li>
-        <a> <SinginIcon width="16" />签到 </a>
+        <a>
+          <SinginIcon width="16" />签到
+        </a>
       </li>
     </div>
   </section>
   <!-- Open the modal using ID.showModal() method -->
-  <dialog
-    id="my_modal_5"
-    class="modal modal-bottom sm:modal-middle"
-    ref="modal"
-  >
+  <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle" ref="modal">
     <div class="modal-box">
       <h3 class="text-lg font-bold">删除对话?</h3>
       <p class="py-4">
@@ -72,15 +65,18 @@ import SinginIcon from "@/assets/svg/singin.svg?component";
 // type
 import type { IRequestData, IRecord } from "@/types";
 // store
-import { useRecordStore, useUserStore } from "@/store";
+import { useRecordStore, useUserStore, useMessageStore } from "@/store";
 
 const recordStore = useRecordStore();
 const userStore = useUserStore();
+const messageStore = useMessageStore()
 
 defineEmits(["closeSidebar"]);
 /** 创建新对话 */
 const createNewChat = () => {
-  console.log("createNewChat");
+  recordStore.clearActiveRecord()
+  messageStore.messages = []
+  recordStore.toggleRecord()
 };
 
 // 获取对话列表

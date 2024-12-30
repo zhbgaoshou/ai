@@ -1,6 +1,7 @@
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
-import { copy } from "@/utils/copy";
+import { copy } from '@/utils/copy'
+
 
 export default function (el: HTMLElement) {
   // 获取所有 <pre> 标签
@@ -8,33 +9,42 @@ export default function (el: HTMLElement) {
 
   blocks.forEach((block: HTMLElement) => {
     const codeEl = block.querySelector("code");
-    // 为代码块添加高亮
-    hljs.highlightElement(block);
+    if (!codeEl) return;
+    const language = codeEl.className.replace("language-", "");
 
-    // 创建一个复制按钮
-    const copyButton = document.createElement("button");
-    copyButton.innerText = "复制";
-    copyButton.className = "copy-btn";
+    // 使用 highlightAuto 自动检测代码语言并高亮
+    const codeText = codeEl.innerText.trim(); // 获取代码文本
+    const highlightedCode = hljs.highlightAuto(codeText).value; // 高亮代码
+    codeEl.innerHTML = highlightedCode; // 替换为高亮后的内容
 
-    // 设置按钮样式
-    copyButton.style.position = "absolute";
-    copyButton.style.right = "10px";
-    copyButton.style.top = "10px";
-    copyButton.style.padding = "5px 10px";
-    copyButton.style.fontSize = "12px";
-    copyButton.style.cursor = "pointer";
+    const html = document.createElement("div");
+    html.classList.add("w-full", "border-base-200", "h-[30px]", "flex", "justify-between", "items-center", "border-b-[1px]", "mb-4", "pb-[10px]")
 
-    // 为 <pre> 设置相对定位，以便按钮能够正确定位
-    block.style.position = "relative";
 
-    // 点击复制功能
-    copyButton.addEventListener("click", function () {
-      const code = codeEl?.innerText.trim() || ""; // 获取代码内容
-      copy(code).then(() => {
-        console.log("复制成功");
+    const span = document.createElement("span");
+    span.classList.add("btn", "btn-xs", "no-animation");
+    span.innerHTML = language
+    html.appendChild(span);
+
+
+    const button = document.createElement("button");
+    button.classList.add("btn", "btn-xs");
+    button.innerHTML = `<svg class="feather feather-copy" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><rect height="13" rx="2" ry="2" width="13" x="9" y="9"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制代码`;
+    html.appendChild(button);
+    button.addEventListener("click", () => {
+      copy(codeText).then(() => {
+        button.innerHTML = `<svg class="feather feather-check" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"/></svg>已复制!`;
+        setTimeout(() => {
+          button.innerHTML = `<svg class="feather feather-copy" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><rect height="13" rx="2" ry="2" width="13" x="9" y="9"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制代码`;
+        }, 2000)
       });
     });
-    // 将复制按钮添加到代码块中
-    block.appendChild(copyButton);
+
+    button.classList.add("bg-opacity-80");
+    span.classList.add("bg-opacity-80");
+
+    console.log(html);
+
+    block.prepend(html);
   });
 }

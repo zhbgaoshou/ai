@@ -4,38 +4,34 @@
     <div class="drawer-content flex flex-col min-h-0">
       <!-- 控制边栏 的按钮 -->
       <Header v-model="isCollapse" />
-      <div class="overflow-auto flex-1 mx-1">
-        <Main />
+      <div class="overflow-auto flex-1 mx-1 pr-2">
+        <Main :messages="messageStore.messages" :generate-text="generateText" />
+
       </div>
       <In @send="send" v-model:content="content" :models="userStore.models" />
     </div>
-    <div class="drawer-side">
-      <label
-        for="my-drawer"
-        aria-label="close sidebar"
-        class="drawer-overlay"
-      ></label>
+    <div class="drawer-side ">
+      <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
       <Sidebar @close-sidebar="isCollapse = true" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { fetchEventSource } from "@microsoft/fetch-event-source";
-import { nanoid } from "nanoid";
-import moment from "moment-timezone";
+import { fetchEventSource } from "@microsoft/fetch-event-source"
 
 // vue
-import { ref, onMounted } from "vue";
+import { ref, reactive, watch } from "vue";
 // 组件
 import Sidebar from "./Sidebar.vue";
 import Header from "@/components/Header/index.vue";
 import Main from "./Main.vue";
 import In from "./In.vue";
 // store
-import { useUserStore, useRecordStore } from "@/store";
+import { useUserStore, useRecordStore, useMessageStore } from "@/store";
 const userStore = useUserStore();
 const recordStore = useRecordStore();
+const messageStore = useMessageStore();
 
 // 边栏折叠操作
 const isCollapse = ref(false);
@@ -44,50 +40,47 @@ const isCollapse = ref(false);
 function getModels() {
   userStore.getModels();
 }
-onMounted(() => {
-  getModels();
+// 获取消息
+interface IMessageParams {
+  page: number;
+  page_size: number;
+  record_id: number | string;
+}
+
+const getMessageParams = reactive<IMessageParams>({
+  page: 1,
+  page_size: 10,
+  record_id: recordStore.activeRecordId,
 });
+function getMessages(data: IMessageParams) {
+  messageStore.getMessages(data)
+}
+
+getModels();
+watch(() => recordStore.activeRecordId, record_id => {
+  if (record_id) {
+    getMessageParams.record_id = record_id
+    getMessages(getMessageParams)
+  }
+}, {
+  immediate: true
+})
 
 /** 发送流式请求 openai */
-/**
- * 没有默认记录时创建
- * @param model 模型名称
- */
-function createRecord(model: string, rid: string | number) {
-  return {
-    id: rid,
-    name: "新会话",
-    model: model,
-    user_id: userStore.userId,
-    endpoint: "openai",
-    is_edited: false,
-    is_active: true,
-    created_at: formatByMomentTimezone(new Date().toISOString()),
-  };
-}
-/**
- * 格式化到中国大陆时区的时间
- * @param time
- * @returns 格式化时区的时间
- */
-const formatByMomentTimezone = (time: string) => {
-  let timezoneName = moment.tz.guess(true);
-  const resDate = moment.tz(time, timezoneName)?.format();
-  return resDate || ""; //
-};
-
 /**
  * 创建消息
  * @param record_id string
  * @param model string
  */
-function createMessage(record_id: string | number, model: string) {
+function createMessage(record_id: string | number, model: string, content: string, endpoint: string = 'openai', role: string = 'user') {
   const data = {
-    content: content.value,
+    content,
     user_id: userStore.userId,
     model: model,
-    role: "user",
-    record_id: record_id,
+    role: role,
+    record_id: record_id as string,
+    endpoint,
+    unfinished: true,
   };
 
   return data;
@@ -101,20 +94,19 @@ interface IStream {
   finish: boolean;
   data?: any;
 }
+let generateText = ref('')
 function send() {
   const controller = new AbortController();
   const model = userStore.defaultModel.value;
 
   let record_id = recordStore.activeRecordId;
-  let isCreate = false;
 
-  /** 没有默认记录时创建 */
-  if (!record_id) {
-    record_id = nanoid();
-    isCreate = true;
+  const userMessage = createMessage(record_id, model, content.value);
+
+  if (content.value) {
+    content.value = "";
+    messageStore.addMessage(userMessage);
   }
-
-  const userMessage = createMessage(record_id, model);
 
   fetchEventSource(`${import.meta.env.VITE_BASE_URL}/chat/message/stream`, {
     method: "POST",
@@ -127,20 +119,24 @@ function send() {
     body: JSON.stringify(userMessage),
     onmessage(ev) {
       const streamData: IStream = JSON.parse(ev.data);
-      if (content.value) {
-        content.value = "";
-      }
-      if (streamData.start && isCreate) {
-        const newRecord = createRecord(model, record_id);
-        recordStore.records.unshift(newRecord);
-        recordStore.createRecord(newRecord);
-      }
       if (streamData.text) {
-        console.log(streamData.text);
+        generateText.value += streamData.text
       }
     },
-    onclose() {
-      console.log("close");
+    async onclose() {
+      if (!record_id) {
+        await recordStore.getRecords({
+          page: 1,
+          page_size: 1,
+          user_id: userStore.userId,
+        })
+        record_id = recordStore.activeRecordId
+      }
+      if (generateText.value) {
+        const aiMessage = createMessage(record_id, model, generateText.value, 'openai', 'assistant');
+        generateText.value = ''
+        messageStore.addMessage(aiMessage);
+      }
     },
     onerror(err) {
       throw err;
