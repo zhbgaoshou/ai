@@ -4,7 +4,9 @@
     <div class="drawer-content flex flex-col min-h-0">
       <!-- 控制边栏 的按钮 -->
       <Header v-model="isCollapse" />
-      <Main />
+      <div class="overflow-auto flex-1">
+        <Main />
+      </div>
       <In v-model:content="content" :models="userStore.models" />
     </div>
     <div class="drawer-side">

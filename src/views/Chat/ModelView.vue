@@ -1,6 +1,6 @@
 <template>
     <details class="dropdown dropdown-top dropdown-open" ref="dropdownRef" v-on-click-outside="closeDropdown">
-        <summary class="btn btn-sm text-sm font-normal">
+        <summary class="btn btn-sm text-sm font-normal btn-ghost">
             {{ userStore.defaultModel.name }}
             <ChvronUpIcon width="20" />
         </summary>

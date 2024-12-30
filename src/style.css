@@ -13,6 +13,7 @@ html {
 /* 滚动条样式 */
 *::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
   /*  设置纵轴（y轴）轴滚动条 */
 
 }
@@ -41,7 +42,7 @@ html {
 /* 覆盖 daisyUI 默认的 :active 样式 */
 .menu *:focus,
 .menu *:active {
-  background: initial !important;
+  background: transparent !important;
   /* 移除背景色 */
   color: inherit !important;
   /* 保留原文字颜色 */

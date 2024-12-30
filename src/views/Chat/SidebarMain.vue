@@ -68,7 +68,7 @@ const observer = new IntersectionObserver(cb, { threshold: 0.5, rootMargin: '50p
 
 <template>
 
-  <ul class="flex-1 mt-8 flex-nowrap p-3 overflow-y-scroll">
+  <ul class="flex-1 mt-2 flex-nowrap p-3 overflow-y-scroll">
     <!-- 今天 -->
     <li class="menu-title" v-if="categorizedRecords.today.length">今天</li>
     <li v-for="record in categorizedRecords.today" :key="record.id" class="group"

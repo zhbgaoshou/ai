@@ -1,6 +1,6 @@
 <template>
     <div class="flex justify-center p-2">
-        <div class="w-[80%] bg-base-200 p-2 rounded-[20px]">
+        <div class="w-[95%] md:w-[80%] bg-base-200 p-2 rounded-[20px]">
             <form>
                 <textarea @input="inputChange" ref="textareaRef" key="textareaRef" v-model.trim="content"
                     class="bg-transparent h-12 w-full p-2 outline-none resize-none max-h-80 format-text"

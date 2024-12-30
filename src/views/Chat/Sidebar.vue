@@ -1,10 +1,11 @@
 <template>
   <section
-    class="menu p-0 w-72 bg-base-100 justify-between min-h-0 h-full transition-all shadow-sm border-[1px] border-base-200">
+    class="menu p-0 w-72 bg-base-100 justify-between min-h-0 h-full transition-all shadow-sm border-[1px] border-base-200"
+    id="sidebar">
     <!-- header -->
 
-    <li>
-      <span class="flex justify-between gap-2">
+    <li class="m-3">
+      <span class="flex justify-between gap-2 !bg-transparent">
         <div class="tooltip tooltip-right hidden md:block" data-tip="关闭边栏">
           <ExpandLeftIcon width="18" @click="$emit('closeSidebar')" />
         </div>
@@ -19,7 +20,7 @@
       @delete-record="deleteRecord" @edit-record="editRecord" :is-show-loader="isShowLoaderRef"
       @more-loader="moreLoader" />
     <!-- footer -->
-    <div class="border-t-[1px] border-base-300 ">
+    <div class="border-t-[1px] border-base-300 px-3">
       <li class="mt-2"><a>
           <UpLevelIcon />升级
         </a></li>
